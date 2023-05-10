@@ -67,6 +67,7 @@ jobs:
             }
             ).catch((error) => {
                 core.setOutput("status", "failure");
+                core.setOutput("error", error.response.data.message);
             }
             );
 
@@ -109,5 +110,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "❌ Repository [${{ needs.extract_repository_settings.outputs.repository_name }}](${{ needs.extract_repository_settings.outputs.repository_name }}) could not be created"
+              body: "❌ Repository could not be created: ${{ steps.create_repository.outputs.error }}"
             })
