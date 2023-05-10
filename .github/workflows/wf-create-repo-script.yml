@@ -73,7 +73,7 @@ jobs:
 
       # Add comment if repository was created
       - name: Add comment
-        #if: contains(steps.create_repository.outputs.status, 'success')
+        if: contains(steps.create_repository.outputs.status, 'success')
         uses: actions/github-script@v6.3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
 
       # Close issue if repository was created
       - name: Close issue
-        #if: contains(steps.create_repository.outputs.status, 'success')
+        if: contains(steps.create_repository.outputs.status, 'success')
         uses: actions/github-script@v6.3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -101,7 +101,7 @@ jobs:
 
       # Add comment if repository was not created
       - name: Add comment
-        #if: contains(steps.create_repository.outputs.status, 'failure'))
+        if: steps.create_repository.outputs.error != ''
         uses: actions/github-script@v6.3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
