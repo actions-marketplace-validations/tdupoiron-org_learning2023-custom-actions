@@ -3,7 +3,7 @@ name: New repository request
 title: "New repository request"
 description: Request a new corporate repository
 
-labels: [repo-ops, 0-new-repository-request]
+labels: [0-new-repository-request]
 
 body:
   - type: markdown
