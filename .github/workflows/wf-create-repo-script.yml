@@ -60,37 +60,3 @@ jobs:
                 core.setOutput("error", error.response.data.message);
             }
             );
-
-  # 4. Add comment if repository was created
-  add_issue_comment_on_success:
-    if: contains(needs.create_repository.outputs.status, 'success')
-    needs: create_repository
-    uses: ./.github/workflows/rwf-comment-issue.yml
-    with:
-      issue_number: ${{ github.event.issue.number }}
-      repo_owner: ${{ github.event.repository.owner.login }}
-      repo_name: ${{ github.event.repository.name }}
-      comment: "✅ Repository [${{ needs.create_repository.outputs.repo_full_name }}](${{ needs.create_repository.outputs.repo_url }}) created"
-    secrets: inherit
-
-  # 5. Close issue
-  close_issue:
-    needs: add_issue_comment_on_success
-    uses: ./.github/workflows/rwf-close-issue.yml
-    with:
-      issue_number: ${{ github.event.issue.number }}
-      repo_owner: ${{ github.event.repository.owner.login }}
-      repo_name: ${{ github.event.repository.name }}
-    secrets: inherit
-  
-  # 4b. Add comment if repository was not created
-  add_issue_comment_on_failure:
-    if: contains(needs.create_repository.outputs.status, 'failure')
-    needs: create_repository
-    uses: ./.github/workflows/rwf-comment-issue.yml
-    with:
-      issue_number: ${{ github.event.issue.number }}
-      repo_owner: ${{ github.event.repository.owner.login }}
-      repo_name: ${{ github.event.repository.name }}
-      comment: "❌ Repository could not be created: ${{ needs.create_repository.outputs.error }}"
-    secrets: inherit
