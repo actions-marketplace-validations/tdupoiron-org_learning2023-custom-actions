@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const { Octokit } = require("@octokit/rest");
 
 const octokit = new Octokit({
-  auth: core.getInput('token');,
+  auth: core.getInput('token'),
 });
 
 async function createRepository(repoName, isPrivate) {
