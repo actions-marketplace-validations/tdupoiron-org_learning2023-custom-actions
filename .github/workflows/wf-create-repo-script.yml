@@ -58,7 +58,7 @@ jobs:
             github.rest.repos.createInOrg({
               org: context.repo.owner,
               name: '${{ needs.extract_repository_settings.outputs.repository_name }}',
-              visibility: ${{ needs.extract_repository_settings.outputs.repository_visibility }},
+              visibility: '${{ needs.extract_repository_settings.outputs.repository_visibility }}',
             }).then(({ data }) => {
                 core.setOutput("repo_full_name", data.full_name);
                 core.setOutput("repo_url", data.html_url);
