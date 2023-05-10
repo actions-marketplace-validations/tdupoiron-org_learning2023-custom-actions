@@ -1,31 +1,54 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Create Repository on Issue creation
 
 on:
   issues:
+    types:
+      - opened
+      - reopened
+      - edited
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+
+  env
+
+  # Extract repository settings from issue body
+  extract_repository_settings:
+    if: contains(github.event.issue.labels.*.name, '0-new-repository-request')
+
     runs-on: ubuntu-latest
+    outputs: 
+      repository_name: ${{ steps.extract.outputs.repository_name }}
+      repository_visibility: ${{ steps.extract.outputs.repository_visibility }}
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Extract repository settings
+        id: extract
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "${{ github.event.issue.body }}" >> body.txt
+          echo "::set-output name=repository_name::$(awk '/### Repository name/{getline; getline; print}' body.txt)"
+          echo "::set-output name=repository_visibility::$(awk '/### Repository visibility/{getline; getline; print}' body.txt)"
+
+  # Request approval
+  request_approval:
+    runs-on: ubuntu-latest
+    needs: extract_repository_settings
+
+    steps:
+
+      - name: Rename issue
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "New repository request: ${{ needs.extract_repository_settings.outputs.repository_name }}"
+            })
+
+      - name: Add label "1 - creating repository"
+        uses: andymckay/labeler@1.0.4
+        with:
+          add-labels: "1 - creating repository"
+          remove-labels: "0-new-repository-request"
