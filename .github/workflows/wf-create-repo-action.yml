@@ -1,11 +1,9 @@
-name: Create Repository on Issue creation
+name: Create Repository on Issue creation via a single action
 
 on:
   issues:
     types:
       - opened
-      - reopened
-      - edited
 
 permissions:
   issues: write
@@ -72,3 +70,9 @@ jobs:
               repo: context.repo.repo,
               body: "Repository [${{ steps.create_repository.outputs.repo_full_name }}](${{ steps.create_repository.outputs.repo_url }}) created"
             })
+
+      # Close issue
+      - name: Close issue
+        #if: contains(steps.create_repository.outputs.status, 'success')
+        uses:
+          

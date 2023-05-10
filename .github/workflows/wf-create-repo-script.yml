@@ -1,0 +1,114 @@
+name: Create Repository on Issue creation via inline scripts
+
+on:
+  issues:
+    types:
+      - opened
+
+permissions:
+  issues: write
+
+jobs:
+
+  # 1. Extract repository settings from issue body
+  extract_repository_settings:
+    if: contains(github.event.issue.labels.*.name, 'repo-ops')
+
+    runs-on: ubuntu-latest
+    outputs: 
+      repository_name: ${{ steps.extract.outputs.repository_name }}
+      repository_visibility: ${{ steps.extract.outputs.repository_visibility }}
+
+    steps:
+      - name: Extract repository settings
+        id: extract
+        run: |
+          echo "${{ github.event.issue.body }}" >> body.txt
+          echo "::set-output name=repository_name::$(awk '/### Repository name/{getline; getline; print}' body.txt)"
+          echo "::set-output name=repository_visibility::$(awk '/### Repository visibility/{getline; getline; print}' body.txt)"
+
+      - name: Rename issue
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "New repository request: ${{ steps.extract.outputs.repository_name }}"
+            })
+
+  # 2. Create repository
+  create_repository:
+    needs: extract_repository_settings
+    if: needs.extract_repository_settings.outputs.repository_name != ''
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Create repository
+      - name: Create repository
+        id: create_repository
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.repos.createInOrg({
+              org: context.repo.owner,
+              name: '${{ needs.extract_repository_settings.outputs.repository_name }}',
+              visibility: ${{ needs.extract_repository_settings.outputs.repository_visibility }},
+            }).then(({ data }) => {
+                core.setOutput("repo_full_name", data.full_name);
+                core.setOutput("repo_url", data.html_url);
+                core.setOutput("repo_id", data.id);
+                core.setOutput("status", "success");
+            }
+            ).catch((error) => {
+                core.setFailed(error.response.data.message);
+                core.setOutput("status", "failure");
+            }
+            );
+
+      # Add comment if repository was created
+      - name: Add comment
+        #if: contains(steps.create_repository.outputs.status, 'success')
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "✅ Repository [${{ steps.create_repository.outputs.repo_full_name }}](${{ steps.create_repository.outputs.repo_url }}) created"
+            })
+
+      # Close issue if repository was created
+      - name: Close issue
+        #if: contains(steps.create_repository.outputs.status, 'success')
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed'
+            })
+
+      # Add comment if repository was not created
+      - name: Add comment
+        #if: contains(steps.create_repository.outputs.status, 'failure'))
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "❌ Repository [${{ needs.extract_repository_settings.outputs.repository_name }}](${{ needs.extract_repository_settings.outputs.repository_name }}) could not be created"
+            })
