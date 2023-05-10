@@ -1,0 +1,38 @@
+name: Rename issue
+
+on:
+  workflow_call:
+    inputs:
+      issue_number:
+        description: 'The ID of the issue'
+        required: true
+        type: number
+
+      repo_owner:
+        description: 'The owner of the repository'
+        required: true
+        type: string
+
+      repo_name:
+        description: 'The name of the repository'
+        required: true
+        type: string
+
+jobs:
+
+  rename_issue:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Rename issue
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.update({
+              issue_number: ${{ inputs.issue_number }},
+              owner: ${{ inputs.repo_owner }},
+              repo: ${{ inputs.repo_name }},
+              title: "New repository request: ${{ inputs.repo_name }}"
+            })

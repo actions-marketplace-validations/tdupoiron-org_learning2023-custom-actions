@@ -19,9 +19,21 @@ jobs:
     with: 
       issue_body: ${{ github.event.issue.body }}
 
+  # 2. Rename issue
+  rename_issue:
+    needs: extract_repository_settings
+    if: needs.extract_repository_settings.outputs.repository_name != ''
+
+    uses: ./.github/workflows/rwf-rename-issue.yml
+    with: 
+      issue_number: ${{ github.event.issue.number }}
+      repo_owner: ${{ github.event.repository.owner.login }}
+      repo_name: ${{ github.event.repository.name }}
+    secrets: inherit
+
   # 2. Create repository
   create_repository:
-    needs: extract_repository_settings
+    needs: rename_issue
     if: needs.extract_repository_settings.outputs.repository_name != ''
 
     runs-on: ubuntu-latest
@@ -39,6 +51,8 @@ jobs:
               repo: context.repo.repo,
               title: "New repository request: ${{ needs.extract_repository_settings.outputs.repository_name }}"
             })
+
+            secrets: inherit
 
       # Create repository
       - name: Create repository

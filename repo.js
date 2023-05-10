@@ -23,10 +23,6 @@ async function createRepository(repoOwner, repoName, repoVisibility) {
 }
 
 // Get Input Parameters
-const issueTitle = core.getInput('issue_title');
-const issueBody = core.getInput('issue_body');
-const issueId = core.getInput('issue_id');
-
 const repoOwner = core.getInput('repo_owner');
 const repoName = core.getInput('repo_name');
 const repoVisibility = core.getInput('repo_visibility');

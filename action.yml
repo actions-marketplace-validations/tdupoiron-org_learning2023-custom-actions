@@ -10,12 +10,6 @@ branding:
 
 inputs:
 
-  issue_title:
-    description: The title of the issue
-    required: true
-  issue_body:
-    description: The body of the issue
-    required: true
   issue_id:
     description: The ID of the issue
     required: true
@@ -27,7 +21,7 @@ inputs:
     description: The visibility of the repository
     required: false
     default: public
-    
+
   token:
     description: The access token used to authenticate to the GitHub API
     required: true
