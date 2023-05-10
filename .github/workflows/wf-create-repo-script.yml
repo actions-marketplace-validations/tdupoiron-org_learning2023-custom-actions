@@ -39,7 +39,6 @@ jobs:
 
     steps:
 
-      # Create repository
       - name: Create repository
         id: create_repository
         uses: actions/github-script@v6.3.3
@@ -62,44 +61,33 @@ jobs:
             }
             );
 
-      # Add comment if repository was created
-      - name: Add comment
-        if: contains(steps.create_repository.outputs.status, 'success')
-        uses: actions/github-script@v6.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "✅ Repository [${{ steps.create_repository.outputs.repo_full_name }}](${{ steps.create_repository.outputs.repo_url }}) created"
-            })
+  # 4. Add comment if repository was created
+  add_issue_comment_on_success:
+    needs: create_repository
+    uses: ./.github/workflows/rwf-comment-issue.yml
+    with:
+      issue_number: ${{ github.event.issue.number }}
+      repo_owner: ${{ github.event.repository.owner.login }}
+      repo_name: ${{ github.event.repository.name }}
+      comment: "✅ Repository [${{ needs.create_repository.outputs.repo_full_name }}](${{ needs.create_repository.outputs.repo_url }}) created"
 
-      # Close issue if repository was created
-      - name: Close issue
-        if: contains(steps.create_repository.outputs.status, 'success')
-        uses: actions/github-script@v6.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.update({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'closed'
-            })
+  # 5. Close issue
+  close_issue:
+    needs: add_issue_comment_on_success
 
-      # Add comment if repository was not created
-      - name: Add comment
-        if: contains(steps.create_repository.outputs.status, 'failure')
-        uses: actions/github-script@v6.3.3
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "❌ Repository could not be created: ${{ steps.create_repository.outputs.error }}"
-            })
+    uses: ./.github/workflows/rwf-close-issue.yml
+    with:
+      issue_number: ${{ github.event.issue.number }}
+      repo_owner: ${{ github.event.repository.owner.login }}
+      repo_name: ${{ github.event.repository.name }}
+  
+  # 4b. Add comment if repository was not created
+  add_issue_comment_on_failure:
+    if: contains(needs.create_repository.outputs.status, 'failure')
+    needs: create_repository
+    uses: ./.github/workflows/rwf-comment-issue.yml
+    with:
+      issue_number: ${{ github.event.issue.number }}
+      repo_owner: ${{ github.event.repository.owner.login }}
+      repo_name: ${{ github.event.repository.name }}
+      comment: "❌ Repository could not be created: ${{ needs.create_repository.outputs.error }}"
