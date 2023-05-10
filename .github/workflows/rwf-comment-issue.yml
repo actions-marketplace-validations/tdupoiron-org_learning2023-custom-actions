@@ -1,4 +1,4 @@
-name: Rename issue
+name: Comment issue
 
 on:
   workflow_call:
@@ -18,26 +18,26 @@ on:
         required: true
         type: string
 
-      issue_title:
-        description: 'The title of the issue'
+      comment:
+        description: 'The comment to add to the issue'
         required: true
         type: string
 
 jobs:
 
-  rename_issue:
+  comment_issue:
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Rename issue
+      - name: Comment issue
         uses: actions/github-script@v6.3.3
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            github.rest.issues.update({
-              issue_number: ${{ inputs.issue_number }},
-              owner: '${{ inputs.repo_owner }}',
-              repo: '${{ inputs.repo_name }}',
-              title: "${{ inputs.issue_title }}"
+            github.rest.issues.createComment({
+              issue_number: ${{ github.event.inputs.issue_number }},
+              owner: ${{ github.event.inputs.repo_owner }},
+              repo: ${{ github.event.inputs.repo_name }},
+              body: ${{ github.event.inputs.comment }}
             })
