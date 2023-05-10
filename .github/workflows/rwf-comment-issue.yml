@@ -37,7 +37,7 @@ jobs:
           script: |
             github.rest.issues.createComment({
               issue_number: ${{ github.event.inputs.issue_number }},
-              owner: ${{ github.event.inputs.repo_owner }},
-              repo: ${{ github.event.inputs.repo_name }},
-              body: ${{ github.event.inputs.comment }}
+              owner: '${{ github.event.inputs.repo_owner }}',
+              repo: '${{ github.event.inputs.repo_name }}',
+              body: '${{ github.event.inputs.comment }}'
             })

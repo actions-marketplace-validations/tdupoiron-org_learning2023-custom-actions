@@ -39,5 +39,5 @@ jobs:
               issue_number: ${{ inputs.issue_number }},
               owner: '${{ inputs.repo_owner }}',
               repo: '${{ inputs.repo_name }}',
-              title: "${{ inputs.issue_title }}"
+              title: '${{ inputs.issue_title }}''
             })
