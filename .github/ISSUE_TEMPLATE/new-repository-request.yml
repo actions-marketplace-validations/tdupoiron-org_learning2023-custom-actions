@@ -3,7 +3,8 @@ name: New repository request
 title: "New repository request"
 description: Request a new corporate repository
 
-labels: [new-repository-request]
+labels: ["bug", "triage"]
+assignees: ["@octocat"]
 
 body:
   - type: markdown
