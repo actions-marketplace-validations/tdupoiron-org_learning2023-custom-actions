@@ -37,7 +37,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: "New repository request: ${{ steps.extract.outputs.repository_name }}"
+              title: "New repository request: ${{ steps.extract_repository_settings.outputs.repository_name }}"
             })
 
       # Create repository
