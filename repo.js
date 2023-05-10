@@ -12,6 +12,7 @@ async function createRepository(repoName, isPrivate) {
         private: isPrivate,
     }).then(({ data }) => {
         core.setOutput("repo_full_name", data.full_name);
+        core.setOutput("repo_url", data.html_url);
         core.setOutput("repo_id", data.id);
     }
     ).catch((error) => {
