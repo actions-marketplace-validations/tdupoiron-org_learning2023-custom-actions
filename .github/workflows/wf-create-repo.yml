@@ -7,13 +7,17 @@ on:
       - reopened
       - edited
 
-jobs:
+env:
+  LABEL_NEW_REPO: "0-new-repository-request"
+  LABEL_CREATING_REPO: "1 - creating repository"
+  LABEL_REPO_CREATED: "2 - repository created"
+  LABEL_ERROR: "3 - error"
 
-  env
+jobs:
 
   # Extract repository settings from issue body
   extract_repository_settings:
-    if: contains(github.event.issue.labels.*.name, '0-new-repository-request')
+    if: contains(github.event.issue.labels.*.name, env.LABEL_NEW_REPO)
 
     runs-on: ubuntu-latest
     outputs: 
@@ -47,8 +51,8 @@ jobs:
               title: "New repository request: ${{ needs.extract_repository_settings.outputs.repository_name }}"
             })
 
-      - name: Add label "1 - creating repository"
+      - name: Add label ${{ env.LABEL_CREATING_REPO }}
         uses: andymckay/labeler@1.0.4
         with:
-          add-labels: "1 - creating repository"
-          remove-labels: "0-new-repository-request"
+          add-labels: ${{ env.LABEL_CREATING_REPO }}
+          remove-labels: ${{ env.LABEL_NEW_REPO }}
