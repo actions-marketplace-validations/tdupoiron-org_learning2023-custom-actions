@@ -1,4 +1,4 @@
-name: Comment issue
+name: RWF3 - Comment issue
 
 on:
   workflow_call:

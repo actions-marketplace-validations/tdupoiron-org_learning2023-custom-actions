@@ -1,4 +1,4 @@
-name: Rename issue
+name: RWF2 - Rename issue
 
 on:
   workflow_call:

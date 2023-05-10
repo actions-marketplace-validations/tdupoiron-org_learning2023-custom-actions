@@ -1,4 +1,4 @@
-name: Extract repository settings from Issue
+name: RWF1 - Extract repository settings from Issue
 
 on:
   workflow_call:

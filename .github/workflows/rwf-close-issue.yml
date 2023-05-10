@@ -1,4 +1,4 @@
-name: Close issue
+name: RWF4 - Close issue
 
 on:
   workflow_call:
