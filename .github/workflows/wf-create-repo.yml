@@ -60,14 +60,14 @@ jobs:
 
       # Add comment
       - name: Add comment
-          if: contains(steps.create_repository.outputs.status, 'success')
-          uses: actions/github-script@v6.3.3
-          with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            script: |
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: "Repository [${{ steps }}](${{ steps.create_repository.outputs.repository_url }}) created"
-              })
+        #if: contains(steps.create_repository.outputs.status, 'success')
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "Repository [${{ steps.create_repository.outputs.repo_full_name }}](${{ steps.create_repository.outputs.repo_url }}) created"
+            })
