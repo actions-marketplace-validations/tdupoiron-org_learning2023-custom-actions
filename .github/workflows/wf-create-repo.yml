@@ -17,7 +17,7 @@ jobs:
 
   # Extract repository settings from issue body
   extract_repository_settings:
-    if: contains(github.event.issue.labels.*.name, env.LABEL_NEW_REPO)
+    if: contains(github.event.issue.labels.*.name, '0-new-repository-request')
 
     runs-on: ubuntu-latest
     outputs: 
