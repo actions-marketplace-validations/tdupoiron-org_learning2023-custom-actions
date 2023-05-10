@@ -53,7 +53,7 @@ jobs:
       # Create repository
       - name: tdupoiron - Create a repository
         id: create_repository
-        uses: tdupoiron/learning2023-custom-actions@1.0.0
+        uses: tdupoiron/learning2023-custom-actions@main
         with: 
           repo_is_private: ${{ needs.extract_repository_settings.outputs.repository_visibility == 'private' }}
           repo_name: ${{ needs.extract_repository_settings.outputs.repository_name }}
