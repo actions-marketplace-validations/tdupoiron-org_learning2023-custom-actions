@@ -5,11 +5,12 @@ const octokit = new Octokit({
   auth: core.getInput('token'),
 });
 
-async function createRepository(repoName, isPrivate) {
+async function createRepository(repoOwner, repoName, repoVisibility) {
 
-    octokit.rest.repos.createForAuthenticatedUser({
+    octokit.rest.repos.createInOrg({
+        org: repoOwner,
         name: repoName,
-        private: isPrivate,
+        visibility: repoVisibility
     }).then(({ data }) => {
         core.setOutput("repo_full_name", data.full_name);
         core.setOutput("repo_url", data.html_url);
@@ -22,7 +23,10 @@ async function createRepository(repoName, isPrivate) {
 }
 
 // Get Input Parameters
+const repoOwner = core.getInput('repo_owner');
 const repoName = core.getInput('repo_name');
-const isPrivate = core.getInput('repo_is_private');
+const repoVisibility = core.getInput('repo_visibility');
 
-createRepository(repoName, isPrivate);
+console.log(`Creating repository ${repoOwner}/${repoName} with visibility ${repoVisibility}`);
+
+createRepository(repoOwner, repoName, repoVisibility);
