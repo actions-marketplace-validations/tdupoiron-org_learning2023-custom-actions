@@ -7,6 +7,14 @@ on:
         description: The body of the issue
         type: string
         required: true
+    
+    outputs:
+      repository_name:
+        description: The name of the repository
+        value: ${{ jobs.extract_repository_settings.outputs.repository_name }}
+      repository_visibility:
+        description: The visibility of the repository
+        value: ${{ jobs.extract_repository_settings.outputs.repository_visibility }}
 
 jobs:
 
