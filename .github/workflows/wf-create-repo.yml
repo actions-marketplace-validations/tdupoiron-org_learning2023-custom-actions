@@ -8,16 +8,16 @@ on:
       - edited
 
 env:
-  LABEL_NEW_REPO: "0-new-repository-request"
-  LABEL_CREATING_REPO: "1 - creating repository"
-  LABEL_REPO_CREATED: "2 - repository created"
-  LABEL_ERROR: "3 - error"
+  #LABEL_NEW_REQUEST: "0 - new request"
+  #LABEL_CREATING_REPO: "1 - creating repository"
+  #LABEL_REPO_CREATED: "2 - repository created"
+  #LABEL_ERROR: "3 - error"
 
 jobs:
 
   # Extract repository settings from issue body
   extract_repository_settings:
-    if: contains(github.event.issue.labels.*.name, '0-new-repository-request')
+    if: contains(github.event.issue.labels.*.name, 'repo-ops')
 
     runs-on: ubuntu-latest
     outputs: 
