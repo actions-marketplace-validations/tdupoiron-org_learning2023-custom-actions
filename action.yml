@@ -4,6 +4,10 @@ name: 'tdupoiron - Create a repository'
 
 description: 'Create a repository'
 
+branding:
+  icon: 'arrow-right-circle'
+  color: 'green'
+
 inputs:
 
   repo_name:
