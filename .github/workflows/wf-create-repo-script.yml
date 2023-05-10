@@ -60,3 +60,15 @@ jobs:
                 core.setOutput("error", error.response.data.message);
             }
             );
+
+  # 4. Add comment if repository was created
+  add_issue_comment_on_success:
+    if: contains(needs.create_repository.outputs.status, 'success')
+    needs: create_repository
+    uses: ./.github/workflows/rwf-comment-issue.yml
+    with:
+      issue_number: ${{ github.event.issue.number }}
+      repo_owner: ${{ github.event.repository.owner.login }}
+      repo_name: ${{ github.event.repository.name }}
+      comment: "✅ Repository [${{ needs.create_repository.outputs.repo_full_name }}](${{ needs.create_repository.outputs.repo_url }}) created"
+    secrets: inherit
