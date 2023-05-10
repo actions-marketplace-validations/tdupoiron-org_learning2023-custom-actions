@@ -17,6 +17,9 @@ inputs:
     description: The visibility of the repository
     required: false
     default: public
+  token:
+    description: The access token used to authenticate to the GitHub API
+    required: true
 
 outputs:
   repo_id:
