@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo "Renaming issue ${{ inputs.issue_number }} to ${{ inputs.repo_name }} that belongs to ${{ inputs.repo_owner }}"
       - name: Rename issue
         uses: actions/github-script@v6.3.3
         with:
@@ -33,7 +32,7 @@ jobs:
           script: |
             github.rest.issues.update({
               issue_number: ${{ inputs.issue_number }},
-              owner: ${{ inputs.repo_owner }},
-              repo: ${{ inputs.repo_name }},
+              owner: '${{ inputs.repo_owner }}',
+              repo: '${{ inputs.repo_name }}',
               title: "New repository request: ${{ inputs.repo_name }}"
             })
